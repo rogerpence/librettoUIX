@@ -33,46 +33,55 @@ namespace LibrettoUI_2
             lu.description = "Hello, World";
 
             this.librettoRootFolder = ConfigurationManager.AppSettings["librettoRootFolder"];
-            ArgumentNullException.ThrowIfNull(librettoRootFolder);
+            ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
 
             this.DataContext = lu;
         }
 
         private void buttonGetTemplateFolder_Click(object sender, RoutedEventArgs e)
         {
-            List<FolderFileItem> listContents;
-            string selectedFolder;
+            ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
+            string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\templates");
 
-            var listInfo = DirectoryManager.GetFolderFileItems(this.librettoRootFolder, new FolderFileItem { File = "Select a template", Path = "xxx" });
-
+            var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory);
             if (listInfo != null)
             {
-                listContents = listInfo.Item1;
-                selectedFolder = listInfo.Item2;
-
-                lu.schemaList = listContents;
+                lu.TemplateList = listInfo.Item1;
+                lu.Template = listInfo.Item2;
             }
+            comboboxTemplates.SelectedIndex = 0;
         }
 
 
         private void buttonGetSchemasFolder_Click(object sender, RoutedEventArgs e)
         {
-            List<FolderFileItem> listContents;
-            string selectedFolder;
+            ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
+            string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\schemas");
 
-            var listInfo = DirectoryManager.GetFolderFileItems(this.librettoRootFolder, new FolderFileItem { File = "Select a template", Path = "xxx" });
+            var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory, new FolderFileItem { File = "Select a template", Path = "" });
 
             if (listInfo != null)
             {
-                listContents = listInfo.Item1;
-                selectedFolder = listInfo.Item2;
-
-                lu.schemaList = listContents;
+                lu.SchemaList = listInfo.Item1;
+                lu.Schema = listInfo.Item2;
             }
+            comboboxSchemas.SelectedIndex = 0;
         }
 
         private void buttonOutputPath_Click(object sender, RoutedEventArgs e)
         {
+            ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
+            string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\output");
+
+            System.Windows.Forms.FolderBrowserDialog openFileDlg = new System.Windows.Forms.FolderBrowserDialog();
+
+            openFileDlg.InitialDirectory = targetDirectory;
+
+            var result = openFileDlg.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                lu.OutputPath = openFileDlg.SelectedPath;
+            }
         }
 
         private void buttonLaunchLibretto_Click(object sender, RoutedEventArgs e)
@@ -85,8 +94,14 @@ namespace LibrettoUI_2
 
         }
 
+        private void comboboxTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lu.Template = ((FolderFileItem)comboboxTemplates.SelectedItem).Path;
+        }
 
-
-
+        private void comboboxSchemas_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lu.Schema = ((FolderFileItem)comboboxSchemas.SelectedItem).Path;
+        }
     }
 }

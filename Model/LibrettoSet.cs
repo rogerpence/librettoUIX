@@ -10,64 +10,36 @@ namespace LibrettoUI_2.Model;
 //[NotifyPropertyChanged]
 
 
-public class LibrettoUnit : ObservableObject
+public class LibrettoUnit : LibrettoUnitBase
 {
 
     public LibrettoUnit()
     {
-
     }
 
 
-    private bool? _tester;
-    public bool? tester
-    {
-        get { return _tester; }
-        set { SetField(ref _tester, value); }
-    }
-
-
-    private string? _description;
-    public string? description
-    {
-        get { return _description; }
-        set { SetField(ref _description, value); }
-    }
-
-
-    /*
-        private string? _description;
-        public string? description
-        {
-            get { return _description; }
-            set { SetField(ref _description, value); }
-        }
-    */
-    private bool? _dataProvided = false;
-    public bool? dataProvided
-    {
-        get { return _dataProvided; }
-        set { SetField(ref _dataProvided, value);}
-    }
-
-    public string? schema { get; set; }
-    public string? template { get; set; }
-    public string? outputPath { get; set; }
 
     private List<FolderFileItem>? _schemaList;
-    public List<FolderFileItem>? schemaList
+    public List<FolderFileItem>? SchemaList
     {
         get { return _schemaList; }
         set { 
                 SetField(ref _schemaList, value);
-                dataProvided = IsAllDataProvided(); 
+               // this.DataProvided = base.IsAllDataProvided(); 
             }       
     }
 
-    private bool IsAllDataProvided()
+    private List<FolderFileItem>? _templateList;
+    public List<FolderFileItem>? TemplateList
     {
-        return (! (_schemaList == null));
+        get { return _templateList; }
+        set
+        {
+            SetField(ref _templateList, value);
+            //DataProvided = IsAllDataProvided();
+        }
     }
+
 }
 
 

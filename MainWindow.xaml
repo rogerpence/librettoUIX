@@ -46,13 +46,12 @@
 
         <StackPanel Orientation="Vertical" Margin="25,25,25,25">
 
+        <!--Get templates-->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource MediumText}">
                     Template
                 </TextBlock>
             </StackPanel>
-
-            <!--Style=""-->
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  VerticalAlignment="center">
                 <Button Name="buttonGetTempalatesFolder" Style="{StaticResource IconButton}" Click="buttonGetTemplateFolder_Click">
@@ -65,9 +64,8 @@
 
                 <ComboBox x:Name="comboboxTemplates" Width="240" Margin="0,0,5,0" 
                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                      SelectedIndex="0"
-                      ItemsSource="{Binding Path=schemaList,
-                                    UpdateSourceTrigger=PropertyChanged}">                          
+                      ItemsSource="{Binding Path=TemplateList,
+                                    UpdateSourceTrigger=PropertyChanged}" SelectionChanged="comboboxTemplates_SelectionChanged">                          
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding File}" HorizontalAlignment="Center"
@@ -77,8 +75,9 @@
                 </ComboBox>
             </StackPanel>
 
-            <TextBlock x:Name="TemplatePathOutput"  Style="{StaticResource TinyText}" Text="asdfasfdasdf"/>
-
+            <TextBlock x:Name="TemplatePathOutput"  Style="{StaticResource TinyText}" Text="{Binding Template, UpdateSourceTrigger=PropertyChanged}"/>           
+            
+        <!--Get schemas-->
             <TextBlock  Style="{StaticResource MediumText}" Text="Schema"/>
 
             <StackPanel Orientation="Horizontal"   HorizontalAlignment="Left" VerticalAlignment="center">
@@ -90,17 +89,22 @@
                     </Button.Content>
                 </Button>
 
-                <ComboBox x:Name="comboboxSchemas" Width="240"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ComboBox x:Name="comboboxSchemas" Width="240"  HorizontalAlignment="Center" VerticalAlignment="Center"
+                    ItemsSource="{Binding Path=SchemaList,
+                                  UpdateSourceTrigger=PropertyChanged}" SelectionChanged="comboboxSchemas_SelectionChanged"
+                    >
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding File}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Path=File}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </StackPanel>
 
-            <TextBlock x:Name="SchemaPathOutput"  Style="{StaticResource TinyText}" Text="asdfasfdasdf"/>
-
+            <TextBlock x:Name="SchemaPathOutput"  Style="{StaticResource TinyText}" Text="{Binding Schema, UpdateSourceTrigger=PropertyChanged}"/>
+            
+            
+        <!--Get output path-->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource MediumText}">
                     Output Path
@@ -117,9 +121,9 @@
                 </Button>
             </StackPanel>
 
-            <TextBlock x:Name="GeneratedFileOutputPath"  Style="{StaticResource TinyText}" Text="asdfasfdasdf"/>
+            <TextBlock x:Name="GeneratedFileOutputPath"  Style="{StaticResource TinyText}" Text="{Binding OutputPath, UpdateSourceTrigger=PropertyChanged}"/>
 
-
+        <!-- Buttons -->
             <StackPanel Orientation="Vertical"  Margin="0,20,0,5">
                 <TextBlock Style="{StaticResource MediumText}">
                         Name for this Libretto set (needed if you want to save the set)

@@ -36,7 +36,6 @@ internal class DirectoryManager
         System.Windows.Forms.FolderBrowserDialog openFileDlg = new System.Windows.Forms.FolderBrowserDialog();
 
         openFileDlg.InitialDirectory = initialDirectory;
-        //openFileDlg.InitialDirectory = @"C:\Users\thumb\Documents\programming\rpUtilities\librettox";
 
         var result = openFileDlg.ShowDialog();
         if (result.ToString() != string.Empty)
@@ -45,6 +44,7 @@ internal class DirectoryManager
 
             if (firstItem != null)
             {
+                firstItem.Path = openFileDlg.SelectedPath + @"\*.*";
                 files.Insert(0, firstItem);
             }
 
