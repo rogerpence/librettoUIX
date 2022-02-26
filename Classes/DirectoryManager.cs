@@ -13,10 +13,8 @@ internal class DirectoryManager
     public static List<FolderFileItem> GetFiles(string folder, string pattern = "*.*")
     {
         List<FolderFileItem> files = new List<FolderFileItem>();
-
         
         string[]? result = Directory.GetFiles(folder, pattern);
-
 
         foreach (string fullPath in result)
         {
@@ -38,7 +36,7 @@ internal class DirectoryManager
         openFileDlg.InitialDirectory = initialDirectory;
 
         var result = openFileDlg.ShowDialog();
-        if (result.ToString() != string.Empty)
+        if (result == System.Windows.Forms.DialogResult.OK)  
         {
             List<FolderFileItem> files = DirectoryManager.GetFiles(openFileDlg.SelectedPath);
 
@@ -50,8 +48,10 @@ internal class DirectoryManager
 
             return Tuple.Create(files, openFileDlg.SelectedPath);
         }
-
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
 }

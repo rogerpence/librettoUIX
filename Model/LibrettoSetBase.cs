@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace LibrettoUI_2.Model
 {
@@ -14,17 +15,20 @@ namespace LibrettoUI_2.Model
         }
 
         private bool? _DataProvided = false;
+        [JsonIgnore]
         public bool? DataProvided
         {
             get { return _DataProvided; }
             set { SetField(ref _DataProvided, value); }
         }
 
-        private string? _description;
-        public string? description
+        private string? _Description;
+        public string? Description
         {
-            get { return _description; }
-            set { SetField(ref _description, value); }
+            get { return _Description; }
+            set { SetField(ref _Description, value);
+                this.DataProvided = IsAllDataProvided();
+            }
         }
 
         private string? _Schema;
@@ -54,7 +58,7 @@ namespace LibrettoUI_2.Model
                 }
         }
 
-        protected bool IsAllDataProvided()
+        public bool IsAllDataProvided()
         {
             //return (! (_schemaList == null));
             return (this.Schema != null && this.Template != null && this.OutputPath != null);

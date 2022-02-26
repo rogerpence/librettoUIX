@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+
+namespace LibrettoUI_2;
+
+internal class ProcessLauncher
+{
+
+    StringBuilder stdoutBuffer = new StringBuilder();
+
+    public string? ConsoleOutput;
+
+    static public string GetLibrettoXCommandLineArgs(string templateFile, string schemaFile, string outputPath)
+    {
+        return $"librettox.py -t \"{templateFile}\" -s \"{schemaFile}\" -o \"{outputPath}\"";
+    }
+
+    public void LaunchProcess(string command, string arguments, bool wait = false)
+    {
+        Process process = new Process();
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+
+        stdoutBuffer.Clear();
+
+        Stopwatch sw = new Stopwatch();
+
+        sw.Start();
+
+        Console.WriteLine("Running commands {0} {1}...", command, arguments);
+
+        startInfo.FileName = command;
+        startInfo.Arguments = arguments;
+
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = true;
+        startInfo.RedirectStandardOutput = true;
+
+        // process.EnableRaisingEvents = true;
+        process.OutputDataReceived += OutputDataReceived;
+
+        process.StartInfo = startInfo;
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.WaitForExit();
+        process.CancelOutputRead();
+
+        int code = process.ExitCode;
+
+        string outputinfo = stdoutBuffer.ToString();
+        sw.Stop();
+
+        process.Close();
+        process.Dispose();
+
+        string minutes = sw.ElapsedMilliseconds < 60000 ? " < 1 min" : (sw.ElapsedMilliseconds / 60000).ToString("#,### mins");
+
+        string msg = String.Format("file = {0} | minutes to import = {1} | bcp output = {2}", arguments, minutes, outputinfo);
+
+        return;
+    }
+
+    void OutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        if (e.Data == null ||
+            String.IsNullOrEmpty(e.Data))
+        {
+            this.ConsoleOutput = "No output...";
+            return;
+
+        }
+
+        this.ConsoleOutput = e.Data.ToString();
+
+        /*
+
+        string o = e.Data.ToString();
+
+        if (!e.Data.ToString().ToLower().Contains("rows sent to SQL Server") &&
+            !e.Data.ToString().ToLower().Contains("total sent"))
+        {
+            stdoutBuffer.Append(e.Data.ToString());
+        }
+        */
+    }
+}
+

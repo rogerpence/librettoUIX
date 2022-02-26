@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"
         mc:Ignorable="d" FontSize="18" 
-        Title="LibrettoUI-2" Height="650" Width="800" FontFamily="Roboto">
+        Title="LibrettoUI-2" Height="700" Width="950" FontFamily="Roboto">
     <!--DataContext="{Binding RelativeSource={RelativeSource Self}}">-->
 
     <!--xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"-->
@@ -41,9 +41,7 @@
 
     <!--<local:MainWindow/>-->
 
-
     <Grid>
-
         <StackPanel Orientation="Vertical" Margin="25,25,25,25">
 
         <!--Get templates-->
@@ -51,6 +49,13 @@
                 <TextBlock Style="{StaticResource MediumText}">
                     Template
                 </TextBlock>
+                <!--<Button >
+                    <Hyperlink Click="Hyperlink_Click">
+                        <TextBlock Style="{StaticResource TinyText}">
+                            Clear this libretto set
+                        </TextBlock>
+                    </Hyperlink>
+                </Button>-->
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  VerticalAlignment="center">
@@ -64,8 +69,11 @@
 
                 <ComboBox x:Name="comboboxTemplates" Width="240" Margin="0,0,5,0" 
                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                      ItemsSource="{Binding Path=TemplateList,
-                                    UpdateSourceTrigger=PropertyChanged}" SelectionChanged="comboboxTemplates_SelectionChanged">                          
+                      SelectedValuePath="File"    
+                      ItemsSource="{Binding Path=TemplateList, 
+                                    UpdateSourceTrigger=PropertyChanged}"
+                      SelectionChanged="comboboxTemplates_SelectionChanged"
+                      IsEnabled="{Binding Path=TemplatesPopulated, UpdateSourceTrigger=PropertyChanged}">                          
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding File}" HorizontalAlignment="Center"
@@ -90,9 +98,11 @@
                 </Button>
 
                 <ComboBox x:Name="comboboxSchemas" Width="240"  HorizontalAlignment="Center" VerticalAlignment="Center"
-                    ItemsSource="{Binding Path=SchemaList,
-                                  UpdateSourceTrigger=PropertyChanged}" SelectionChanged="comboboxSchemas_SelectionChanged"
-                    >
+                        ItemsSource="{Binding Path=SchemaList,
+                                      UpdateSourceTrigger=PropertyChanged}" 
+                        SelectedValuePath="File"                              
+                        SelectionChanged="comboboxSchemas_SelectionChanged"
+                        IsEnabled="{Binding Path=SchemasPopulated, UpdateSourceTrigger=PropertyChanged}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=File}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -102,7 +112,6 @@
             </StackPanel>
 
             <TextBlock x:Name="SchemaPathOutput"  Style="{StaticResource TinyText}" Text="{Binding Schema, UpdateSourceTrigger=PropertyChanged}"/>
-            
             
         <!--Get output path-->
             <StackPanel Orientation="Horizontal">
@@ -128,24 +137,48 @@
                 <TextBlock Style="{StaticResource MediumText}">
                         Name for this Libretto set (needed if you want to save the set)
                 </TextBlock>
-                <TextBox x:Name="LibrettoSetName" Text="{Binding Path=description, UpdateSourceTrigger=Default}"/>
+                <TextBox x:Name="textbox_LibrettoSetName" Text="{Binding Path=Description, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding Path=DataProvided, UpdateSourceTrigger=PropertyChanged}"                         
+                         TextChanged="LibrettoSetName_TextChanged"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                 <Button  Name="buttonLaunchLibretto" Click="buttonLaunchLibretto_Click"
-                             Padding="15,15,15,15" IsEnabled="{Binding Path=dataProvided, UpdateSourceTrigger= 
-                    PropertyChanged}">
+                             Padding="15,15,15,15" IsEnabled="{Binding Path=DataProvided, UpdateSourceTrigger=PropertyChanged}">
                     <Button.Content>
                         Launch Libretto
                     </Button.Content>
                 </Button>
                 <Button  Name="buttonSaveLibrettoSet" Click="buttonSaveLibrettoSet_Click"
-                        Padding="15,15,15,15"  Margin="20,0,0,0">
+                        Padding="15,15,15,15"  Margin="20,0,0,0"
+                        IsEnabled="{Binding Path=EnableButtonSaveLibrettoSet, UpdateSourceTrigger=PropertyChanged}">
                     <Button.Content>
                         Save Libretto set
                     </Button.Content>
                 </Button>
+                <Button  Name="buttonLoadLibrettoSet" 
+                        Padding="15,15,15,15"  Margin="20,0,0,0" Click="buttonLoadLibrettoSet_Click">
+                    <Button.Content>
+                        Load Libretto set
+                    </Button.Content>
+                </Button>
             </StackPanel>
+
+            <!-- Messages -->
+            <StackPanel Orientation="Vertical"  Margin="0,20,0,5">
+                <ListBox x:Name="listboxMessages" Height="150"
+                         ItemsSource="{Binding Messages,UpdateSourceTrigger=PropertyChanged }"
+                         FontSize="12">
+                </ListBox>
+                    
+                    
+                    <!--<ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Messages, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>-->
+            </StackPanel>
+
 
         </StackPanel>
 
