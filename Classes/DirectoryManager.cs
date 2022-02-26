@@ -27,7 +27,7 @@ internal class DirectoryManager
         return files;
     }
 
-    public static Tuple<List<FolderFileItem>, string>? GetFolderFileItems(string? initialDirectory, FolderFileItem? firstItem=null)
+    public static Tuple<List<FolderFileItem>, string>? GetFolderFileItems(string? initialDirectory, string filePattern, FolderFileItem? firstItem=null)
     {
         ArgumentNullException.ThrowIfNull(initialDirectory);
 
@@ -38,7 +38,7 @@ internal class DirectoryManager
         var result = openFileDlg.ShowDialog();
         if (result == System.Windows.Forms.DialogResult.OK)  
         {
-            List<FolderFileItem> files = DirectoryManager.GetFiles(openFileDlg.SelectedPath);
+            List<FolderFileItem> files = DirectoryManager.GetFiles(openFileDlg.SelectedPath, filePattern);
 
             if (firstItem != null)
             {

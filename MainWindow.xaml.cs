@@ -14,6 +14,11 @@ namespace LibrettoUI_2;
 
 public partial class MainWindow : Window
 {
+    public const string TEMPLATE_FILE_PATTERN = "*.*";
+    public const string SCHEMA_FILE_PATTERN = "*.*";
+    public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.\*";
+    public const string LEADING_BACKSLASH_REGEX_PATTERN = @"\\";
+
     public Model.LibrettoUnit lu = new Model.LibrettoUnit();
 
     string? librettoRootFolder;
@@ -34,7 +39,7 @@ public partial class MainWindow : Window
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
         string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\templates");
 
-        var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory);
+        var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory, TEMPLATE_FILE_PATTERN);
         if (listInfo != null)
         {
             lu.TemplateList = listInfo.Item1;
@@ -48,7 +53,7 @@ public partial class MainWindow : Window
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
         string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\schemas");
 
-        var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory, new FolderFileItem { File = "Select all schemas", Path = "" });
+        var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory,SCHEMA_FILE_PATTERN, new FolderFileItem { File = "Select all schemas", Path = "" });
 
         if (listInfo != null)
         {
@@ -99,15 +104,7 @@ public partial class MainWindow : Window
         lu.Messages.Clear();
         lu.Messages = pl.StatusMessage;
 
-        //foreach (string msg in pl.StatusMessage)
-        //{
-        //    lu.Messages.Add(msg);
-        //}
-
         listboxMessages.UpdateLayout();
-
-        //lu.Messages = pl.StatusMessage;
-        //MessageBox.Show(lu.Messages);
     }
 
     private void buttonSaveLibrettoSet_Click(object sender, RoutedEventArgs e)
@@ -202,7 +199,7 @@ public partial class MainWindow : Window
         ArgumentNullException.ThrowIfNull(luToLoad.Schema);
 
         string? templateFileName = Path.GetFileName(luToLoad.Template);
-        Regex re = new Regex(@"\\" + templateFileName, RegexOptions.Compiled);
+        Regex re = new Regex(LEADING_BACKSLASH_REGEX_PATTERN + templateFileName, RegexOptions.Compiled);
         string? templatePath = re.Replace(luToLoad.Template, String.Empty);
 
         clearCurrentLibrettoSet();
@@ -229,19 +226,19 @@ public partial class MainWindow : Window
         Regex re;
 
         string? schemaFileName = Path.GetFileName(luToLoad.Schema);
-        if (schemaFileName == @"*.*")
+        if (schemaFileName == SCHEMA_FILE_PATTERN)
         {
-            re = new Regex(@"\\\*\.\*", RegexOptions.Compiled);
+            re = new Regex(SCHEMA_FILE_REGEX_PATTERN, RegexOptions.Compiled);
         }
         else
         {
-            re = new Regex(@"\\" + schemaFileName, RegexOptions.Compiled);
+            re = new Regex(LEADING_BACKSLASH_REGEX_PATTERN + schemaFileName, RegexOptions.Compiled);
         }
         string? schemaPath = re.Replace(luToLoad.Schema, String.Empty);
 
         // Load schemas select list.
         List<FolderFileItem> files = DirectoryManager.GetFiles(schemaPath);
-        if (schemaFileName == @"*.*")
+        if (schemaFileName == SCHEMA_FILE_PATTERN)
         {
             FolderFileItem ffi = new FolderFileItem() { File = "Select all schemas", Path = luToLoad.Schema };
             files.Insert(0, ffi);
