@@ -205,17 +205,6 @@ public partial class MainWindow : Window
         Regex re = new Regex(@"\\" + templateFileName, RegexOptions.Compiled);
         string? templatePath = re.Replace(luToLoad.Template, String.Empty);
 
-        string? schemaFileName = Path.GetFileName(luToLoad.Schema);
-        if (schemaFileName == @"*.*")
-        {
-               re = new Regex(@"\\\*\.\*", RegexOptions.Compiled);
-        }
-        else
-        {
-            re = new Regex(@"\\" + schemaFileName, RegexOptions.Compiled);
-        }
-        string? schemaPath = re.Replace(luToLoad.Schema, String.Empty);
-
         clearCurrentLibrettoSet();
 
         lu.OutputPath = luToLoad.OutputPath;
@@ -229,8 +218,29 @@ public partial class MainWindow : Window
         comboboxTemplates.SelectedValue = templateFileName;
         comboboxTemplates.UpdateLayout();
 
+        openLibrettoSetSchema(lu);
+    }
+
+    public void openLibrettoSetSchema(LibrettoUnit luToLoad)
+    {
+        ArgumentNullException.ThrowIfNull(luToLoad);
+        ArgumentNullException.ThrowIfNull(luToLoad.Schema);
+
+        Regex re;
+
+        string? schemaFileName = Path.GetFileName(luToLoad.Schema);
+        if (schemaFileName == @"*.*")
+        {
+            re = new Regex(@"\\\*\.\*", RegexOptions.Compiled);
+        }
+        else
+        {
+            re = new Regex(@"\\" + schemaFileName, RegexOptions.Compiled);
+        }
+        string? schemaPath = re.Replace(luToLoad.Schema, String.Empty);
+
         // Load schemas select list.
-        files = DirectoryManager.GetFiles(schemaPath);
+        List<FolderFileItem> files = DirectoryManager.GetFiles(schemaPath);
         if (schemaFileName == @"*.*")
         {
             FolderFileItem ffi = new FolderFileItem() { File = "Select all schemas", Path = luToLoad.Schema };
@@ -246,6 +256,8 @@ public partial class MainWindow : Window
 
         comboboxSchemas.UpdateLayout();
     }
+
+
 }
-    
+
 
