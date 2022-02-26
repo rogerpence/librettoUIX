@@ -15,9 +15,15 @@ namespace LibrettoUI_2;
 public partial class MainWindow : Window
 {
     public const string TEMPLATE_FILE_PATTERN = "*.*";
-    public const string SCHEMA_FILE_PATTERN = "*.*";
-    public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.\*";
+    
+    //public const string SCHEMA_FILE_PATTERN = "*.*";
+    //public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.\*";
+
+    public const string SCHEMA_FILE_PATTERN = "*.json";
+    public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.json";
+
     public const string LEADING_BACKSLASH_REGEX_PATTERN = @"\\";
+    public const string DOS_PATH_BACKSLASH = @"\";
 
     public Model.LibrettoUnit lu = new Model.LibrettoUnit();
 
@@ -232,7 +238,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            re = new Regex(LEADING_BACKSLASH_REGEX_PATTERN + schemaFileName, RegexOptions.Compiled);
+            re = new Regex(LEADING_BACKSLASH_REGEX_PATTERN + schemaFileName, RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }
         string? schemaPath = re.Replace(luToLoad.Schema, String.Empty);
 

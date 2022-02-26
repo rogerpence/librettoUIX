@@ -42,7 +42,7 @@ internal class DirectoryManager
 
             if (firstItem != null)
             {
-                firstItem.Path = openFileDlg.SelectedPath + @"\*.*";
+                firstItem.Path = openFileDlg.SelectedPath + MainWindow.DOS_PATH_BACKSLASH + filePattern; 
                 files.Insert(0, firstItem);
             }
 
