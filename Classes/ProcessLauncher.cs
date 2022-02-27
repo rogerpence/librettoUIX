@@ -54,7 +54,6 @@ internal class ProcessLauncher
 
         process.StartInfo = startInfo;
 
-        string outputInfo = "";
 
         try
         {
@@ -78,8 +77,6 @@ internal class ProcessLauncher
         }
 
         string minutes = sw.ElapsedMilliseconds < 60000 ? " < 1 min" : (sw.ElapsedMilliseconds / 60000).ToString("#,### mins");
-
-        string msg = String.Format("file = {0} | minutes to import = {1} | bcp output = {2}", arguments, minutes, outputInfo);
 
         return;
     }

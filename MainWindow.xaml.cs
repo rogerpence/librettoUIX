@@ -1,29 +1,36 @@
 ﻿using LibrettoUI_2.Model;
+using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Text.Json;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Text.Json.Serialization;
-using System.Collections.Generic;
-using Microsoft.Win32;
 
 namespace LibrettoUI_2;
 
 public partial class MainWindow : Window
 {
-    public const string TEMPLATE_FILE_PATTERN = "*.*";
-    
-    //public const string SCHEMA_FILE_PATTERN = "*.*";
-    //public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.\*";
-
+    // Patterns are DOS file patterns unless there is a "REGEX" in the name--in which
+    // case the patter is a regular expression.
+    public const string ALL_FILES_PATTERN = "*.*";
+    public const string DOS_PATH_BACKSLASH = @"\";
+    public const string LEADING_BACKSLASH_REGEX_PATTERN = @"\\";
+    public const string LIBRETTO_OUTPUT_ROOT_FOLDER = @"template_work\output\";
+    public const string LIBRETTO_ROOT_FOLDER_KEY = "librettoRootFolder";
+    public const string LIBRETTO_SCHEMAS_ROOT_FOLDER = @"template_work\schemas\";
+    public const string LIBRETTO_SET_FILE_EXTENSION = ".librettoset.json";
+    public const string LIBRETTO_SETS_ROOT_FOLDER = @"template_work\libretto_sets";
+    public const string LIBRETTO_TEMPLATES_ROOT_FOLDER = @"template_work\templates\";
+    public const string ONE_OR_MORE_BLANKS_REGEX = @"\s+";
+    public const string PYTHON_EXECUTABLE = "Python";
     public const string SCHEMA_FILE_PATTERN = "*.json";
     public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.json";
-
-    public const string LEADING_BACKSLASH_REGEX_PATTERN = @"\\";
-    public const string DOS_PATH_BACKSLASH = @"\";
+    public const string SELECT_ALL_SCHEMAS_TEXT = "Select all schemas";
+    public const string TEMPLATE_FILE_PATTERN = "*.tpl.*";
+    public const string UNDERSCORE = "_";
 
     public Model.LibrettoUnit lu = new Model.LibrettoUnit();
 
@@ -35,7 +42,7 @@ public partial class MainWindow : Window
             
         InitializeComponent();
 
-        this.librettoRootFolder = ConfigurationManager.AppSettings["librettoRootFolder"];
+        this.librettoRootFolder = ConfigurationManager.AppSettings[LIBRETTO_ROOT_FOLDER_KEY];
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
         this.librettoRootFolder = this.librettoRootFolder.ToLower();
     }
@@ -43,7 +50,7 @@ public partial class MainWindow : Window
     private void buttonGetTemplateFolder_Click(object sender, RoutedEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\templates");
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder,  LIBRETTO_TEMPLATES_ROOT_FOLDER);
 
         var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory, TEMPLATE_FILE_PATTERN);
         if (listInfo != null)
@@ -57,10 +64,11 @@ public partial class MainWindow : Window
     private void buttonGetSchemasFolder_Click(object sender, RoutedEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\schemas");
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_SCHEMAS_ROOT_FOLDER); 
 
-        var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory,SCHEMA_FILE_PATTERN, new FolderFileItem { File = "Select all schemas", Path = "" });
-
+        var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory,
+                                                               SCHEMA_FILE_PATTERN,
+                                                               new FolderFileItem { File = SELECT_ALL_SCHEMAS_TEXT, Path = String.Empty });
         if (listInfo != null)
         {
             lu.SchemaList = listInfo.Item1;
@@ -73,7 +81,7 @@ public partial class MainWindow : Window
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
 
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\output");
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_OUTPUT_ROOT_FOLDER);
 
         System.Windows.Forms.FolderBrowserDialog openFileDlg = new System.Windows.Forms.FolderBrowserDialog();
 
@@ -93,9 +101,10 @@ public partial class MainWindow : Window
         ArgumentNullException.ThrowIfNull(lu.OutputPath);
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
 
-        string template = lu.Template.ToLower().Replace(this.librettoRootFolder + @"\template_work\templates\", "");
-        string schema = lu.Schema.ToLower().Replace(this.librettoRootFolder + @"\template_work\schemas\", "");
-        string outputPath = lu.OutputPath.ToLower().Replace(this.librettoRootFolder + @"\template_work\output\", "");
+        // Get relative paths for template, schema, and outputPath.
+        string template = lu.Template.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_TEMPLATES_ROOT_FOLDER.ToLower()), String.Empty);
+        string schema = lu.Schema.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_SCHEMAS_ROOT_FOLDER.ToLower()), String.Empty);
+        string outputPath = lu.OutputPath.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_OUTPUT_ROOT_FOLDER.ToLower()), String.Empty);
 
         string commandLineArgs = ProcessLauncher.GetLibrettoXCommandLineArgs(template, schema, outputPath);
 
@@ -103,7 +112,7 @@ public partial class MainWindow : Window
 
         Directory.SetCurrentDirectory(this.librettoRootFolder);
 
-        pl.LaunchProcess("Python", commandLineArgs);
+        pl.LaunchProcess(PYTHON_EXECUTABLE, commandLineArgs);
 
         ArgumentNullException.ThrowIfNull(lu.Messages);
 
@@ -117,14 +126,14 @@ public partial class MainWindow : Window
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
         ArgumentNullException.ThrowIfNull(lu.Description);
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\libretto_sets");
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_SETS_ROOT_FOLDER);
 
         SaveFileDialog saveFileDialog = new SaveFileDialog();
         saveFileDialog.InitialDirectory = targetDirectory;
 
         string? proposedFileName = lu.Description.ToLower();
-        proposedFileName = Regex.Replace(proposedFileName,@"\s+", "_");
-        saveFileDialog.FileName = proposedFileName + ".librettoset.json";
+        proposedFileName = Regex.Replace(proposedFileName, ONE_OR_MORE_BLANKS_REGEX, UNDERSCORE);
+        saveFileDialog.FileName = proposedFileName + LIBRETTO_SET_FILE_EXTENSION;;
 
         if (saveFileDialog.ShowDialog() == true)
         {
@@ -135,7 +144,7 @@ public partial class MainWindow : Window
 
     private void comboboxTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (lu.Template == null || lu.TemplateList == null)
+        if (lu.Template == null || lu.TemplateList == null || comboboxTemplates.SelectedItem == null)
         {
             return;
         }
@@ -145,7 +154,7 @@ public partial class MainWindow : Window
 
     private void comboboxSchemas_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (lu.SchemaList == null)
+        if (lu.SchemaList == null || comboboxSchemas.SelectedItem == null)
         {
             return; 
         }
@@ -169,11 +178,6 @@ public partial class MainWindow : Window
         lu.Description = null;
     }
 
-    //private void Hyperlink_Click(object sender, RoutedEventArgs e)
-    //{
-    //    clearCurrentLibrettoSet();
-    //}
-
     private void saveLibrettoSet(string fileName)
     {
         JsonSerializerOptions options = new() { WriteIndented = true };
@@ -183,8 +187,8 @@ public partial class MainWindow : Window
 
     private void buttonLoadLibrettoSet_Click(object sender, RoutedEventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, @"template_work\libretto_sets");
+        ArgumentNullException.ThrowIfNull(this.librettoRootFolder);                   
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_SETS_ROOT_FOLDER);
 
         OpenFileDialog openFileDialog = new OpenFileDialog();
         openFileDialog.InitialDirectory = targetDirectory;
@@ -246,7 +250,7 @@ public partial class MainWindow : Window
         List<FolderFileItem> files = DirectoryManager.GetFiles(schemaPath);
         if (schemaFileName == SCHEMA_FILE_PATTERN)
         {
-            FolderFileItem ffi = new FolderFileItem() { File = "Select all schemas", Path = luToLoad.Schema };
+            FolderFileItem ffi = new FolderFileItem() { File = SELECT_ALL_SCHEMAS_TEXT, Path = luToLoad.Schema };
             files.Insert(0, ffi);
             lu.SchemaList = files;
             comboboxSchemas.SelectedIndex = 0;
@@ -259,8 +263,4 @@ public partial class MainWindow : Window
 
         comboboxSchemas.UpdateLayout();
     }
-
-
 }
-
-

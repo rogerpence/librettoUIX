@@ -10,7 +10,7 @@ namespace LibrettoUI_2.Model;
 
 internal class DirectoryManager
 {
-    public static List<FolderFileItem> GetFiles(string folder, string pattern = "*.*")
+    public static List<FolderFileItem> GetFiles(string folder, string pattern = MainWindow.ALL_FILES_PATTERN)
     {
         List<FolderFileItem> files = new List<FolderFileItem>();
         

@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"
         mc:Ignorable="d" FontSize="18" 
-        Title="LibrettoUI-2" Height="700" Width="950" FontFamily="Roboto">
+        Title="LibrettoUI-2" Height="700" Width="950" 
+        Background="DarkBlue"
+        FontFamily="Roboto">
     <!--DataContext="{Binding RelativeSource={RelativeSource Self}}">-->
 
     <!--xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"-->
@@ -15,10 +17,12 @@
         <Style TargetType="TextBlock" x:Key="MediumText">
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Foreground" Value="WhiteSmoke"/>
         </Style>
         <Style TargetType="TextBlock" x:Key="TinyText">
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="15"/>
             <Setter Property="Margin" Value="0,5,0,15"/>
+            <Setter Property="Foreground" Value="WhiteSmoke"/>
         </Style>
         <Style  TargetType="Button" x:Key="IconButton">
             <Setter Property="Width" Value="30"/>
@@ -138,7 +142,7 @@
                         Name for this Libretto set (needed if you want to save the set)
                 </TextBlock>
                 <TextBox x:Name="textbox_LibrettoSetName" Text="{Binding Path=Description, UpdateSourceTrigger=PropertyChanged}"
-                         IsEnabled="{Binding Path=DataProvided, UpdateSourceTrigger=PropertyChanged}"                         
+                         IsEnabled="{Binding Path=DataProvided, UpdateSourceTrigger=PropertyChanged}"  Background="LightGray"                          
                          TextChanged="LibrettoSetName_TextChanged"/>
             </StackPanel>
 
@@ -168,7 +172,7 @@
             <StackPanel Orientation="Vertical"  Margin="0,20,0,5">
                 <ListBox x:Name="listboxMessages" Height="150"
                          ItemsSource="{Binding Messages,UpdateSourceTrigger=PropertyChanged }"
-                         FontSize="12">
+                         FontSize="12" Background="lightgray"  >
                 </ListBox>
                     
                     
