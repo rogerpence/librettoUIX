@@ -10,12 +10,10 @@ namespace LibrettoUI_2;
 
 internal class ProcessLauncher
 {
-
     StringBuilder stdoutBuffer = new StringBuilder();
 
     public List<String> StatusMessage = new List<string>();
 
-        //public string? StandardError;
     public int ExitCode = 0;
 
     static public string GetLibrettoXCommandLineArgs(string templateFile, string schemaFile, string outputPath)
@@ -23,7 +21,7 @@ internal class ProcessLauncher
         return $"librettox.py -t \"{templateFile}\" -s \"{schemaFile}\" -o \"{outputPath}\"";
     }
 
-    public void LaunchProcess(string command, string arguments, bool wait = false)
+    public void LaunchProcess(string command, string arguments, bool wait = true)
     {
         Process process = new Process();
         ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -59,7 +57,10 @@ internal class ProcessLauncher
         {
             process.Start();
             process.BeginOutputReadLine();
-            process.WaitForExit();
+            if (wait)
+            {
+                process.WaitForExit();
+            }
             process.CancelOutputRead();
 
             this.ExitCode = process.ExitCode;

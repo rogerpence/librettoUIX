@@ -6,11 +6,16 @@
     <RootNamespace>LibrettoUI_2</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>    
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Icojoy-Enjoyment-Wizard.ico</ApplicationIcon>    
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\openfolder.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Icojoy-Enjoyment-Wizard.ico" />
   </ItemGroup>
 
   <ItemGroup>

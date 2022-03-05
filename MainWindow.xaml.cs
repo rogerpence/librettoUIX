@@ -9,6 +9,11 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
+
+#pragma warning disable CS8601 // Possible null reference assignment.
+#pragma warning disable CS8602 // Possible null reference assignment.
+#pragma warning disable CS8604 // Possible null reference assignment.
+
 namespace LibrettoUI_2;
 
 public partial class MainWindow : Window
@@ -16,33 +21,48 @@ public partial class MainWindow : Window
     // Patterns are DOS file patterns unless there is a "REGEX" in the name--in which
     // case the patter is a regular expression.
     public const string ALL_FILES_PATTERN = "*.*";
+    public const string CARRIAGE_RETURN = "\n";
+    public const string DOS_CHANGE_DIR = "CD ";
     public const string DOS_PATH_BACKSLASH = @"\";
+    public const string FILE_EXPLORER = "fileExplorer";
     public const string LEADING_BACKSLASH_REGEX_PATTERN = @"\\";
-    public const string LIBRETTO_OUTPUT_ROOT_FOLDER = @"template_work\output\";
+    
     public const string LIBRETTO_ROOT_FOLDER_KEY = "librettoRootFolder";
+
+    public const string LIBRETTO_BATCH_FILE_ROOT_FOLDER = @"template_work\libretto_batch_files";
+    public const string LIBRETTO_OUTPUT_ROOT_FOLDER = @"template_work\output\";
     public const string LIBRETTO_SCHEMAS_ROOT_FOLDER = @"template_work\schemas\";
     public const string LIBRETTO_SET_FILE_EXTENSION = ".librettoset.json";
     public const string LIBRETTO_SETS_ROOT_FOLDER = @"template_work\libretto_sets";
     public const string LIBRETTO_TEMPLATES_ROOT_FOLDER = @"template_work\templates\";
+
     public const string ONE_OR_MORE_BLANKS_REGEX = @"\s+";
     public const string PYTHON_EXECUTABLE = "Python";
     public const string SCHEMA_FILE_PATTERN = "*.json";
     public const string SCHEMA_FILE_REGEX_PATTERN = @"\\\*\.json";
     public const string SELECT_ALL_SCHEMAS_TEXT = "Select all schemas";
+    public const string SPACE = " ";
     public const string TEMPLATE_FILE_PATTERN = "*.tpl.*";
+    public const string TEXT_EDITOR = "textEditor";
     public const string UNDERSCORE = "_";
 
     public Model.LibrettoUnit lu = new Model.LibrettoUnit();
 
     string? librettoRootFolder;
+    string? textEditor;
+    string? fileExplorer;
 
     public MainWindow()
     {
         this.DataContext = lu;
-            
+
         InitializeComponent();
 
         this.librettoRootFolder = ConfigurationManager.AppSettings[LIBRETTO_ROOT_FOLDER_KEY];
+
+        this.textEditor = ConfigurationManager.AppSettings[TEXT_EDITOR];
+        this.fileExplorer = ConfigurationManager.AppSettings[FILE_EXPLORER];
+
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
         this.librettoRootFolder = this.librettoRootFolder.ToLower();
     }
@@ -50,7 +70,7 @@ public partial class MainWindow : Window
     private void buttonGetTemplateFolder_Click(object sender, RoutedEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder,  LIBRETTO_TEMPLATES_ROOT_FOLDER);
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_TEMPLATES_ROOT_FOLDER);
 
         var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory, TEMPLATE_FILE_PATTERN);
         if (listInfo != null)
@@ -64,7 +84,7 @@ public partial class MainWindow : Window
     private void buttonGetSchemasFolder_Click(object sender, RoutedEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
-        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_SCHEMAS_ROOT_FOLDER); 
+        string? targetDirectory = System.IO.Path.Combine(this.librettoRootFolder, LIBRETTO_SCHEMAS_ROOT_FOLDER);
 
         var listInfo = DirectoryManager.GetFolderFileItems(targetDirectory,
                                                                SCHEMA_FILE_PATTERN,
@@ -94,19 +114,38 @@ public partial class MainWindow : Window
         }
     }
 
-    private void buttonLaunchLibretto_Click(object sender, RoutedEventArgs e)
+    private Tuple<string, string, string>? getRelativePaths()
     {
         ArgumentNullException.ThrowIfNull(lu.Template);
-        ArgumentNullException.ThrowIfNull(lu.Schema); 
+        ArgumentNullException.ThrowIfNull(lu.Schema);
         ArgumentNullException.ThrowIfNull(lu.OutputPath);
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
 
         // Get relative paths for template, schema, and outputPath.
-        string template = lu.Template.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_TEMPLATES_ROOT_FOLDER.ToLower()), String.Empty);
-        string schema = lu.Schema.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_SCHEMAS_ROOT_FOLDER.ToLower()), String.Empty);
-        string outputPath = lu.OutputPath.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_OUTPUT_ROOT_FOLDER.ToLower()), String.Empty);
+        string? template = lu.Template.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_TEMPLATES_ROOT_FOLDER.ToLower()), String.Empty);
+        string? schema = lu.Schema.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_SCHEMAS_ROOT_FOLDER.ToLower()), String.Empty);
+        string? outputPath = lu.OutputPath.ToLower().Replace(Path.Combine(this.librettoRootFolder.ToLower(), LIBRETTO_OUTPUT_ROOT_FOLDER.ToLower()), String.Empty);
+
+        return Tuple.Create(template, schema, outputPath);
+    }
+
+    private void buttonLaunchLibretto_Click(object sender, RoutedEventArgs e)
+    {
+        ArgumentNullException.ThrowIfNull(lu.Template);
+        ArgumentNullException.ThrowIfNull(lu.Schema);
+        ArgumentNullException.ThrowIfNull(lu.OutputPath);
+        ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
+
+        Tuple<string, string, string>? paths = getRelativePaths();
+        ArgumentNullException.ThrowIfNull(paths);
+        string template = paths.Item1;
+        string schema = paths.Item2;
+        string outputPath = paths.Item3;
 
         string commandLineArgs = ProcessLauncher.GetLibrettoXCommandLineArgs(template, schema, outputPath);
+
+        lu.Messages.Clear();
+        listboxMessages.UpdateLayout();
 
         ProcessLauncher pl = new ProcessLauncher();
 
@@ -122,6 +161,19 @@ public partial class MainWindow : Window
         listboxMessages.UpdateLayout();
     }
 
+    private string getLibrettoSetBatchFileContents()
+    {
+        Tuple<string, string, string>? paths = getRelativePaths();
+        ArgumentNullException.ThrowIfNull(paths);
+        string template = paths.Item1;
+        string schema = paths.Item2;
+        string outputPath = paths.Item3;
+
+        string contents = DOS_CHANGE_DIR + this.librettoRootFolder + CARRIAGE_RETURN;
+
+        return contents + PYTHON_EXECUTABLE + SPACE + ProcessLauncher.GetLibrettoXCommandLineArgs(template, schema, outputPath);
+    }
+
     private void buttonSaveLibrettoSet_Click(object sender, RoutedEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(this.librettoRootFolder);
@@ -133,12 +185,25 @@ public partial class MainWindow : Window
 
         string? proposedFileName = lu.Description.ToLower();
         proposedFileName = Regex.Replace(proposedFileName, ONE_OR_MORE_BLANKS_REGEX, UNDERSCORE);
-        saveFileDialog.FileName = proposedFileName + LIBRETTO_SET_FILE_EXTENSION;;
+        saveFileDialog.FileName = proposedFileName + LIBRETTO_SET_FILE_EXTENSION;
 
         if (saveFileDialog.ShowDialog() == true)
         {
+            List<string> msgs = new();  
+            msgs.Clear();
+            msgs.Add($"Libretto set saved as: {saveFileDialog.FileName}");
+
             saveLibrettoSet(saveFileDialog.FileName);
-            MessageBox.Show("Written");
+
+
+            string batchFileName = Path.GetFileName(saveFileDialog.FileName.ToLower()).Replace(".json", ".bat");
+            string batchFile = Path.Combine(this.librettoRootFolder, LIBRETTO_BATCH_FILE_ROOT_FOLDER, batchFileName);
+            File.WriteAllText(batchFile, getLibrettoSetBatchFileContents());
+            
+            msgs.Add($"Libretto batch file saved as: {batchFile}");
+
+            lu.Messages = msgs;
+            listboxMessages.UpdateLayout();
         }
     }
 
@@ -159,6 +224,9 @@ public partial class MainWindow : Window
             return; 
         }
         lu.Schema = ((FolderFileItem)comboboxSchemas.SelectedItem).Path;
+        ArgumentNullException.ThrowIfNull(lu.Schema);
+
+        openSchemaButton.Content = (lu.Schema.EndsWith("*.json")) ? "Open schema path" : "Open schema file";
     }
 
     private void LibrettoSetName_TextChanged(object sender, TextChangedEventArgs e)
@@ -262,5 +330,48 @@ public partial class MainWindow : Window
         }
 
         comboboxSchemas.UpdateLayout();
+    }
+
+    private void button_openoutputpath(object sender, RoutedEventArgs e)
+    {
+        ProcessLauncher pl = new ProcessLauncher();
+
+        ArgumentNullException.ThrowIfNull(lu.OutputPath);
+        pl.LaunchProcess(this.fileExplorer, lu.OutputPath, false);
+    }
+
+    private void button_openTemplatePath(object sender, RoutedEventArgs e)
+    {
+        ProcessLauncher pl = new ProcessLauncher();
+
+        ArgumentNullException.ThrowIfNull(lu.Template);
+
+        string? path = Path.GetDirectoryName(lu.Template);
+        ArgumentNullException.ThrowIfNull(path);
+
+        pl.LaunchProcess(this.fileExplorer, path, false);
+    }
+
+    private void button_openSchema(object sender, RoutedEventArgs e)
+    {
+        ProcessLauncher pl = new ProcessLauncher();
+        ArgumentNullException.ThrowIfNull(lu.Schema);
+
+        string schema = lu.Schema;
+        if (schema.EndsWith("*.json")) {
+            schema = schema.ToLower().Replace(@"\*.json", "");
+            pl.LaunchProcess(this.fileExplorer, schema, false);
+        }
+        else {
+            pl.LaunchProcess(this.textEditor, lu.Schema, false);
+        }
+    }
+
+    private void button_openTemplateFile(object sender, RoutedEventArgs e)
+    {
+        ProcessLauncher pl = new ProcessLauncher();
+
+        ArgumentNullException.ThrowIfNull(lu.Template);
+        pl.LaunchProcess(this.textEditor, lu.Template, false);
     }
 }

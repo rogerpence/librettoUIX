@@ -50,7 +50,7 @@ public class LibrettoUnit : LibrettoUnitBase
         get { return _SchemasPopulated; }
         set { SetField(ref _SchemasPopulated, value); }
     }
-    
+
     private List<FolderFileItem>? _templateList;
 
     [JsonIgnore]

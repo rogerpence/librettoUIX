@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"
         mc:Ignorable="d" FontSize="18" 
-        Title="LibrettoUI-2" Height="700" Width="950" 
-        Background="DarkBlue"
+        Title="LibrettoXUI" Height="700" Width="950" 
+        Background="MidnightBlue"
         FontFamily="Roboto">
     <!--DataContext="{Binding RelativeSource={RelativeSource Self}}">-->
 
@@ -36,7 +36,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+        <BooleanToVisibilityConverter x:Key="Converter" />
     </Window.Resources>
 
     <!--<Window.DataContext="{Binding RelativeSource={RelativeSource Self}}">
@@ -71,7 +71,7 @@
                     </Button.Content>
                 </Button>
 
-                <ComboBox x:Name="comboboxTemplates" Width="240" Margin="0,0,5,0" 
+                <ComboBox x:Name="comboboxTemplates" Width="420" Margin="0,0,5,0" 
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       SelectedValuePath="File"    
                       ItemsSource="{Binding Path=TemplateList, 
@@ -85,6 +85,18 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                <Button Style="{StaticResource HyperLinkButtonStyle}" 
+                            Content="Open template" HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Visibility="{Binding Path=SchemasPopulated, Converter={StaticResource Converter}}"
+                            Click="button_openTemplateFile"/>
+                <Button Style="{StaticResource HyperLinkButtonStyle}" 
+                            Margin="5,0,0,0"
+                            Content="Open template path" HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Visibility="{Binding Path=SchemasPopulated, Converter={StaticResource Converter}}"
+                            Click="button_openTemplatePath"/>
+
             </StackPanel>
 
             <TextBlock x:Name="TemplatePathOutput"  Style="{StaticResource TinyText}" Text="{Binding Template, UpdateSourceTrigger=PropertyChanged}"/>           
@@ -101,7 +113,7 @@
                     </Button.Content>
                 </Button>
 
-                <ComboBox x:Name="comboboxSchemas" Width="240"  HorizontalAlignment="Center" VerticalAlignment="Center"
+                <ComboBox x:Name="comboboxSchemas" Width="420"  HorizontalAlignment="Center" VerticalAlignment="Center"
                         ItemsSource="{Binding Path=SchemaList,
                                       UpdateSourceTrigger=PropertyChanged}" 
                         SelectedValuePath="File"                              
@@ -113,6 +125,14 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                <Button Style="{StaticResource HyperLinkButtonStyle}" 
+                            x:Name = "openSchemaButton"
+                            Margin="5,0,0,0"
+                            Content="Open schema" HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Visibility="{Binding Path=SchemasPopulated, Converter={StaticResource Converter}}"
+                            Click="button_openSchema"/>
+
             </StackPanel>
 
             <TextBlock x:Name="SchemaPathOutput"  Style="{StaticResource TinyText}" Text="{Binding Schema, UpdateSourceTrigger=PropertyChanged}"/>
@@ -132,6 +152,11 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
+                <Button Style="{StaticResource HyperLinkButtonStyle}" 
+                            Content="Open output path" HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Visibility="{Binding Path=DataProvided, Converter={StaticResource Converter}}"
+                            Click="button_openoutputpath"/>
             </StackPanel>
 
             <TextBlock x:Name="GeneratedFileOutputPath"  Style="{StaticResource TinyText}" Text="{Binding OutputPath, UpdateSourceTrigger=PropertyChanged}"/>
