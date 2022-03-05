@@ -13,9 +13,9 @@ I strongly suspect that despite my best efforts to write this little naively, my
 
 #### A link label control
 
-Curiously, WPF doesn't have a LinkLabel control. However, [this blog post](https://akashsoni7.blogspot.com/2012/11/wpf-hyperlink-button-using-style-and.html) provides the best way I found to implement a link lable in WPF. 
+Curiously, WPF doesn't have a LinkLabel control (like WinForms does). However, [this blog post](https://akashsoni7.blogspot.com/2012/11/wpf-hyperlink-button-using-style-and.html) provides the best way I've found to implement a link label in WPF. 
 
-Add this style in the `App.xaml` and the problem is easily solved. 
+Add the style below in the WPF project's `App.xaml` file (you may want to tweak some of the properties for your application):
 
 ```
 <Style  x:Key="HyperLinkButtonStyle" TargetType="Button">
@@ -23,7 +23,8 @@ Add this style in the `App.xaml` and the problem is easily solved.
         <Setter.Value>
             <ControlTemplate TargetType="Button">
                 <TextBlock TextDecorations="Underline">
-                        <ContentPresenter TextBlock.FontFamily="Segoe UI" TextBlock.FontSize="13"/>
+                        <ContentPresenter TextBlock.FontFamily="Segoe UI"
+                                          TextBlock.FontSize="13"/>
                 </TextBlock>
             </ControlTemplate>
         </Setter.Value>
@@ -38,7 +39,7 @@ Add this style in the `App.xaml` and the problem is easily solved.
 </Style>
 ```
 
-Apply the style as shown below: 
+And apply that style to a `<Button>` as shown below: 
 
 ```
 <Button Style="{StaticResource HyperLinkButtonStyle}" 
@@ -46,7 +47,6 @@ Apply the style as shown below:
     Content="Open template path" 
     HorizontalAlignment="Center" 
     VerticalAlignment="Center" 
-    Visibility="{Binding Path=SchemasPopulated, 
-                 Converter={StaticResource Converter}}"
     Click="button_openTemplatePath"/>
 ```    
+Boom. Problem solved. 
