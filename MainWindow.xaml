@@ -37,6 +37,7 @@
     <Grid>
         <StackPanel Orientation="Vertical" Margin="25,25,25,25">
 
+        <!--Get template-->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource MediumText}">
                     Template
@@ -67,7 +68,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <Button Style="{StaticResource HyperLinkButtonStyle}" 
-                            Content="Open template" HorizontalAlignment="Center" 
+                            Content="Open template file" HorizontalAlignment="Center" 
                             VerticalAlignment="Center" 
                             Visibility="{Binding Path=SchemasPopulated, Converter={StaticResource Converter}}"
                             Click="button_openTemplateFile"/>
@@ -112,7 +113,7 @@
                             Content="Open schema" HorizontalAlignment="Center" 
                             VerticalAlignment="Center" 
                             Visibility="{Binding Path=SchemasPopulated, Converter={StaticResource Converter}}"
-                            Click="button_openSchema"/>
+                            Click="button_openSchemaPathOrFile"/>
 
             </StackPanel>
 
@@ -137,7 +138,7 @@
                             Content="Open output path" HorizontalAlignment="Center" 
                             VerticalAlignment="Center" 
                             Visibility="{Binding Path=DataProvided, Converter={StaticResource Converter}}"
-                            Click="button_openoutputpath"/>
+                            Click="button_openOutputPath"/>
             </StackPanel>
 
             <TextBlock x:Name="GeneratedFileOutputPath"  Style="{StaticResource TinyText}" Text="{Binding OutputPath, UpdateSourceTrigger=PropertyChanged}"/>
