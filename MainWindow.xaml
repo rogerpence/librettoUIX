@@ -108,7 +108,6 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <Button Style="{StaticResource HyperLinkButtonStyle}" 
-                            x:Name = "openSchemaButton"
                             Margin="5,0,0,0"
                             Content="{Binding SchemaLinkButtonLabel, UpdateSourceTrigger=PropertyChanged}" 
                             HorizontalAlignment="Center" 

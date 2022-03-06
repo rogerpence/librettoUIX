@@ -210,9 +210,8 @@ public partial class MainWindow : Window
         }
         librettoSet.Schema = ((FolderFileItem)comboboxSchemas.SelectedItem).Path;
 
-        // openSchemaButton.Content = (librettoSet.Schema.EndsWith("*.json")) ? "Open schema path" : "Open schema file";
-
-        librettoSet.SchemaLinkButtonLabel = (librettoSet.Schema.EndsWith("*.json")) ? "Open schema path" : "Open schema file";
+        librettoSet.SchemaLinkButtonLabel = 
+            (librettoSet.Schema.ToLower().EndsWith("*.json")) ? "Open schema path" : "Open schema file";
     }
 
     private void LibrettoSetName_TextChanged(object sender, TextChangedEventArgs e)

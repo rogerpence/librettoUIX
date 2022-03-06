@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 namespace LibrettoUI_2.Model;
 
-public class LibrettoSet : ObservableObject //: LibrettoUnitBase
+public class LibrettoSet : ObservableObject 
 {
     public LibrettoSet()
     {

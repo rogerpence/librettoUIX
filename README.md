@@ -11,6 +11,106 @@ I strongly suspect that despite my best efforts to write this little naively, my
 
 ### Interesting things 
 
+#### INotifyPropertyChanged
+
+Use WPF's `Binding` object to bind a value window's model to given property. Use `UpdateSourceTrigger=PropertyChanged` to cause the bound value to referesh when the bound property value changes. This implicitly refreshes when ever a value is changed from the UI. However, if the value is changed programmatically there is a little more work to do. 
+
+```
+<Button  Content="{Binding SchemaLinkButtonLabel,
+                           UpdateSourceTrigger=PropertyChanged}" 
+...
+</Button>                           
+```
+
+You need to implement the `INotifyPropertyChanged` interface for every property for which you want changes observed. To do this, add this class to your project:
+
+```
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace LibrettoUI_2.Model
+{
+    public abstract class ObservableObject : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string? propertyname = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        }
+
+        protected bool SetField<T>(ref T field, T value, 
+                                   [CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value))
+            {
+                return false;
+            }
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+    }
+}
+```
+and your WPF model implement this interface: 
+
+```
+public class LibrettoSet : ObservableObject 
+{
+```
+
+In a bound property's setter, set the field value with the `SetField` method. This ensures that the INotifyPropertyChanged's changed event is raised when the property changes. Every time the property changes the WPF data binding engine knows the property changes. 
+
+```
+private string? _SchemaLinkButtonLabel;
+public string? SchemaLinkButtonLabel
+{
+    get { return _SchemaLinkButtonLabel; }
+    set
+    {
+        SetField(ref _SchemaLinkButtonLabel, value);
+    }
+}
+```
+With that wired up, when the `SchemaLinkButtonLabel` changes, the UI reflects that change. In this example, when the schema selection combobox's SelectionEvent fires, `SchemaaLinkButtonLabel` is changed to the proper text:
+
+```
+librettoSet.SchemaLinkButtonLabel = 
+     (librettoSet.Schema.ToLower().EndsWith("*.json")) ? 
+         "Open schema path" : "Open schema file";
+```
+
+It's a damn shame that observable properties aren't a little more baked into .NET. Not only does this technique require the roll-your-own `ObservableObject` class to implement `INotifyPropertyChanged`, but it also requires requires a full property declaration with an explicit getter and setter--no automatic properties here. 
+
+The [PostSharp](https://www.postsharp.net/essentials) solves the problem very gracefully in the free version of its library, but only for automatic properties, not for explicit properties or child objects. 
+
+```
+[NotifyPropertyChanged]
+public string SchemaLinkButtonlabel { get; set; }
+```
+
+#### Setting a reference to `System.Windows.Forms`
+
+Some Windows features (file open/save dialogs for example) require the project have a reference to `System.Windows.Forms`. For some silly reason, at least in .NET 6, this must be done in the `.csproj` file. Use the `UseWindowsForms` element as shown below to add a reference in your WPF project to `System.Windows.Forms`.
+
+```
+<PropertyGroup>
+...
+  <UseWindowsForms>true</UseWindowsForms>
+...  
+</PropertyGroup>
+```
+
+#### Add images to the Projects resource folder
+
+When you add images to your project, be sure to set their Build Action property to `Resource`.
+
+![](https://rogerpence.dev/wp-content/uploads/2022/03/BmTGIdPz3U.png)
+
+And, while you're at it, whine a little about WPF not supporting SVG files! (The upcoming .NET Maui does!)
+
 #### A link label control
 
 Curiously, WPF doesn't have a LinkLabel control (like WinForms does). However, [this blog post](https://akashsoni7.blogspot.com/2012/11/wpf-hyperlink-button-using-style-and.html) provides the best way I've found to implement a link label in WPF. 
