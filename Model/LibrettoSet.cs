@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace LibrettoUI_2.Model;
 
-public class LibrettoUnit : ObservableObject //: LibrettoUnitBase
+public class LibrettoSet : ObservableObject //: LibrettoUnitBase
 {
-    public LibrettoUnit()
+    public LibrettoSet()
     {
         _Messages = new List<string>();
     }
@@ -127,5 +121,3 @@ public class LibrettoUnit : ObservableObject //: LibrettoUnitBase
         }       
     }
 }
-
-

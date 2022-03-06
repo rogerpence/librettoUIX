@@ -3,15 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"
         mc:Ignorable="d" FontSize="18" 
         Title="LibrettoXUI" Height="700" Width="950" 
         Background="MidnightBlue"
         FontFamily="Roboto">
-    <!--DataContext="{Binding RelativeSource={RelativeSource Self}}">-->
-
-    <!--xmlns:local="clr-namespace:LibrettoUI_2" xmlns:local1="clr-namespace:LibrettoUI_2.Model"-->
-
 
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="MediumText">
@@ -39,27 +34,13 @@
         <BooleanToVisibilityConverter x:Key="Converter" />
     </Window.Resources>
 
-    <!--<Window.DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        
-    </Window.DataContext>-->
-
-    <!--<local:MainWindow/>-->
-
     <Grid>
         <StackPanel Orientation="Vertical" Margin="25,25,25,25">
 
-        <!--Get templates-->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource MediumText}">
                     Template
                 </TextBlock>
-                <!--<Button >
-                    <Hyperlink Click="Hyperlink_Click">
-                        <TextBlock Style="{StaticResource TinyText}">
-                            Clear this libretto set
-                        </TextBlock>
-                    </Hyperlink>
-                </Button>-->
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  VerticalAlignment="center">
@@ -199,13 +180,6 @@
                          ItemsSource="{Binding Messages,UpdateSourceTrigger=PropertyChanged }"
                          FontSize="12" Background="lightgray"  >
                 </ListBox>
-                    
-                    
-                    <!--<ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Messages, UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>-->
             </StackPanel>
 
 
