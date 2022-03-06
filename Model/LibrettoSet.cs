@@ -59,6 +59,16 @@ public class LibrettoSet : ObservableObject //: LibrettoUnitBase
         return (this.Schema != null && this.Template != null && this.OutputPath != null);
     }
 
+    private string? _SchemaLinkButtonLabel;
+    public string? SchemaLinkButtonLabel
+    {
+        get { return _SchemaLinkButtonLabel; }
+        set
+        {
+            SetField(ref _SchemaLinkButtonLabel, value);
+        }
+    }
+
     private List<string>? _Messages;
     public List<string>? Messages
     {

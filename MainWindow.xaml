@@ -110,11 +110,11 @@
                 <Button Style="{StaticResource HyperLinkButtonStyle}" 
                             x:Name = "openSchemaButton"
                             Margin="5,0,0,0"
-                            Content="Open schema" HorizontalAlignment="Center" 
+                            Content="{Binding SchemaLinkButtonLabel, UpdateSourceTrigger=PropertyChanged}" 
+                            HorizontalAlignment="Center" 
                             VerticalAlignment="Center" 
                             Visibility="{Binding Path=SchemasPopulated, Converter={StaticResource Converter}}"
                             Click="button_openSchemaPathOrFile"/>
-
             </StackPanel>
 
             <TextBlock x:Name="SchemaPathOutput"  Style="{StaticResource TinyText}" Text="{Binding Schema, UpdateSourceTrigger=PropertyChanged}"/>
