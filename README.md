@@ -96,6 +96,62 @@ The [PostSharp Essentials](https://www.postsharp.net/essentials) library solves 
 public string SchemaLinkButtonlabel { get; set; }
 ```
 
+#### Visual Studio snippet to insert an observable property
+
+Typing all of this gobbledygoop to get an observable property is a hassle:
+
+```
+private string? _SchemaLinkButtonLabel;
+public string? SchemaLinkButtonLabel
+{
+    get { return _SchemaLinkButtonLabel; }
+    set
+    {
+        SetField(ref _SchemaLinkButtonLabel, value);
+    }
+}
+```
+
+Here is a Visual Studio snippet that eases that pain. Use VS Studio's "Code Snippets Manager" to add to Visual Studio. Then, type `propobs` and press the tab to use it. Note this snippet is for Visual Studio, not Visual Studio Code.
+
+```
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>Observable property</Title>
+            <Shortcut>propobs</Shortcut>
+            <Description>Code snippet for observable property</Description>
+            <Author>Roger Pence</Author>
+            <SnippetTypes>
+                <SnippetType>Expansion</SnippetType>
+            </SnippetTypes>
+        </Header>
+        <Snippet>
+            <Declarations>
+                <Literal>
+                    <ID>type</ID>
+                    <ToolTip>Data type</ToolTip>     
+                    <Default>string</Default>                    
+                </Literal>
+                <Literal>
+                    <ID>var</ID>
+                    <ToolTip>Variable name</ToolTip>                
+                    <Default>myVar</Default>
+                </Literal>
+            </Declarations>
+            <Code Language="csharp"><![CDATA[private $type$? _$var$;
+    public $type$? $var$
+    {
+        get {return _$var$;}            
+        set {SetField(ref _$var$, value);}        
+    }]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>
+```
+
 #### Setting a reference to `System.Windows.Forms`
 
 Some Windows features in WPF (file open/save dialogs for example) require the project have a reference to `System.Windows.Forms`. For some silly reason, at least in .NET 6, this must be done in the `.csproj` file. Use the `UseWindowsForms` element as shown below to add a reference in your WPF project file to `System.Windows.Forms`.
