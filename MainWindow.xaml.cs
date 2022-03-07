@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
-
 #pragma warning disable CS8600 // Possible null reference assignment.
 #pragma warning disable CS8601 // Possible null reference assignment.
 #pragma warning disable CS8602 // Possible null reference assignment.
@@ -133,6 +132,9 @@ public partial class MainWindow : Window
 
         string commandLineArgs = ProcessLauncher.GetLibrettoXCommandLineArgs(template, schema, outputPath);
 
+        System.Windows.Input.Cursor currentCursor = this.Cursor;
+        this.Cursor = System.Windows.Input.Cursors.Wait;
+
         librettoSet.Messages.Clear();
         listboxMessages.UpdateLayout();
 
@@ -146,6 +148,8 @@ public partial class MainWindow : Window
         librettoSet.Messages = pl.StatusMessage;
 
         listboxMessages.UpdateLayout();
+        
+        this.Cursor = currentCursor;
     }
 
     private string getLibrettoSetBatchFileContents()

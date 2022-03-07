@@ -155,3 +155,17 @@ And apply that style to a `<Button>` as shown below:
     Click="button_openTemplatePath"/>
 ```    
 Boom. Problem solved. 
+
+#### Changing the mouse cursor
+
+Save current cursor and change to the `Wait` cursor:
+
+```
+System.Windows.Input.Cursor currentCursor = this.Cursor;
+this.Cursor = System.Windows.Input.Cursors.Wait;
+```
+
+Restore the previous cursor:
+```
+this.Cursor = currentCursor;
+```
