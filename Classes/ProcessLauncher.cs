@@ -32,7 +32,7 @@ internal class ProcessLauncher
 
         sw.Start();
 
-        Console.WriteLine("Running commands {0} {1}...", command, arguments);
+        //Console.WriteLine("Running commands {0} {1}...", command, arguments);
 
         startInfo.FileName = command;
         startInfo.Arguments = arguments;
@@ -46,7 +46,9 @@ internal class ProcessLauncher
         process.OutputDataReceived += (sender, args) => {
             if (! String.IsNullOrEmpty(args.Data))
             {
-                this.StatusMessage.Add(args.Data);
+                string timeNow = DateTime.Now.ToString("HH:mm:ss : ");
+
+                this.StatusMessage.Add(timeNow + args.Data);
             }
         };
 
