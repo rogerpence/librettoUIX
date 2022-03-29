@@ -40,6 +40,7 @@ internal class ProcessLauncher
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         startInfo.RedirectStandardOutput = true;
+        startInfo.RedirectStandardError = true;
 
         process.EnableRaisingEvents = true;
 
@@ -54,11 +55,12 @@ internal class ProcessLauncher
 
         process.StartInfo = startInfo;
 
-
+        string errorText;
         try
         {
             process.Start();
             process.BeginOutputReadLine();
+            errorText = process.StandardError.ReadToEnd();
             if (wait)
             {
                 process.WaitForExit();
@@ -66,6 +68,14 @@ internal class ProcessLauncher
             process.CancelOutputRead();
 
             this.ExitCode = process.ExitCode;
+            if (ExitCode != 0) {
+                errorText = "AN ERROR OCCURRED--it's likely the best error info is at the bottom of this list.\n" + errorText;
+                string[] lines = errorText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string line in lines) 
+                {
+                    this.StatusMessage.Add(line);
+                }
+            }
              
             sw.Stop();
         }
